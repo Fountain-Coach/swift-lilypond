@@ -1,0 +1,20 @@
+name: Bug report
+description: Report a problem
+title: "[bug] "
+labels: [bug]
+body:
+  - type: textarea
+    id: desc
+    attributes:
+      label: Describe the bug
+      placeholder: What happened? What did you expect?
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      placeholder: Steps, score snippet, platform
+  - type: input
+    id: version
+    attributes:
+      label: Versions
+      placeholder: swift-lilypond vX.Y.Z, LilyPond upstream tag
