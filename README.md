@@ -2,7 +2,7 @@
 
 A drop‑in **Swift Package** that wraps **LilyPond** to render **PDF/SVG/PNG** and **MIDI** — designed for the Fountain‑Coach Swift family.
 
-- **No external installs for consumers**: LilyPond is embedded via SPM `binaryTarget`s.
+- **No external installs for consumers**: LilyPond is embedded via SPM `binaryTarget`s. During local development, if no embedded binary is present, the package falls back to your system `lilypond`.
 - **Ergonomic Swift API** (async/await), structured diagnostics, sandboxed runs.
 - **MIDI supported** via LilyPond’s native `\midi {}` block (inside `\score { ... }`).
 - **Aligned with official upstream on GitLab** (canonical): <https://gitlab.com/lilypond/lilypond/-/releases>.
@@ -49,6 +49,8 @@ let art = try await kit.render(source: ly)
 ```
 
 To render **SVG** or **PNG**, set the option accordingly; SVG uses a dedicated backend and should be rendered in a separate run.
+
+Note: For development builds before official releases, the package uses your system `lilypond` if available. Official releases ship embedded binaries verified via provenance.
 
 ---
 

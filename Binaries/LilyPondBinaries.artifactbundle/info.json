@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0",
+  "artifacts": {
+    "lilypond": {
+      "type": "executable",
+      "version": "0.0.0-stub",
+      "variants": [
+        {
+          "path": "macos-arm64/lilypond",
+          "supportedTriples": ["arm64-apple-macosx"]
+        },
+        {
+          "path": "macos-x86_64/lilypond",
+          "supportedTriples": ["x86_64-apple-macosx"]
+        }
+      ]
+    }
+  }
+}
+
