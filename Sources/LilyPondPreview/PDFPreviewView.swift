@@ -1,7 +1,9 @@
 import Foundation
+#if canImport(SwiftUI)
 import SwiftUI
+#endif
 
-#if canImport(AppKit) && canImport(PDFKit)
+#if canImport(AppKit) && canImport(PDFKit) && canImport(SwiftUI)
 import PDFKit
 
 public struct PDFPreviewView: NSViewRepresentable {
@@ -19,7 +21,7 @@ public struct PDFPreviewView: NSViewRepresentable {
         nsView.document = PDFDocument(data: data)
     }
 }
-#elseif canImport(UIKit) && canImport(PDFKit)
+#elseif canImport(UIKit) && canImport(PDFKit) && canImport(SwiftUI)
 import PDFKit
 
 public struct PDFPreviewView: UIViewRepresentable {
@@ -28,9 +30,13 @@ public struct PDFPreviewView: UIViewRepresentable {
     public func makeUIView(context: Context) -> PDFView { PDFView() }
     public func updateUIView(_ uiView: PDFView, context: Context) { uiView.document = PDFDocument(data: data) }
 }
-#else
+#elseif canImport(SwiftUI)
 public struct PDFPreviewView: View {
     public init(_ data: Data) {}
     public var body: some View { Text("PDF preview not supported on this platform.") }
+}
+#else
+public struct PDFPreviewView {
+    public init(_ data: Data) {}
 }
 #endif

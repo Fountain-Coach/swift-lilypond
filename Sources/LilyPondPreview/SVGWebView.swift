@@ -1,7 +1,9 @@
 import Foundation
+#if canImport(SwiftUI)
 import SwiftUI
+#endif
 
-#if canImport(AppKit) && canImport(WebKit)
+#if canImport(AppKit) && canImport(WebKit) && canImport(SwiftUI)
 import WebKit
 public struct SVGWebView: NSViewRepresentable {
     private let svgData: Data
@@ -13,7 +15,7 @@ public struct SVGWebView: NSViewRepresentable {
         nsView.load(svgData, mimeType: "image/svg+xml", characterEncodingName: "utf-8", baseURL: URL(fileURLWithPath: "/"))
     }
 }
-#elseif canImport(UIKit) && canImport(WebKit)
+#elseif canImport(UIKit) && canImport(WebKit) && canImport(SwiftUI)
 import WebKit
 public struct SVGWebView: UIViewRepresentable {
     private let svgData: Data
@@ -23,9 +25,13 @@ public struct SVGWebView: UIViewRepresentable {
         uiView.load(svgData, mimeType: "image/svg+xml", characterEncodingName: "utf-8", baseURL: URL(fileURLWithPath: "/"))
     }
 }
-#else
+#elseif canImport(SwiftUI)
 public struct SVGWebView: View {
     public init(_ data: Data) {}
     public var body: some View { Text("SVG preview not supported on this platform.") }
+}
+#else
+public struct SVGWebView {
+    public init(_ data: Data) {}
 }
 #endif

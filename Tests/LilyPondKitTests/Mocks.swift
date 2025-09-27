@@ -1,7 +1,7 @@
 import Foundation
 @testable import LilyPondKit
 
-final class MockRunner: ProcessRunning {
+final class MockRunner: ProcessRunning, @unchecked Sendable {
     struct RunCall { let launchPath: String; let args: [String] }
     var calls: [RunCall] = []
     var status: Int32 = 0

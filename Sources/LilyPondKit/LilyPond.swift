@@ -246,13 +246,13 @@ enum ProcessExecutor {
 
 // MARK: - Testable environment
 
-protocol ProcessRunning {
+protocol ProcessRunning: Sendable {
     @discardableResult
     func run(_ launchPath: String, args: [String]) throws -> (String, String)
     func runWithStatus(_ launchPath: String, args: [String], timeout: TimeInterval?) throws -> (String, String, Int32)
 }
 
-protocol LilyPondLocating {
+protocol LilyPondLocating: Sendable {
     func find(embeddedPreferred: Bool, override: URL?) throws -> URL
 }
 
