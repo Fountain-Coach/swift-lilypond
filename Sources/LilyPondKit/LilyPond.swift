@@ -48,11 +48,14 @@ public struct LilyPondArtifacts: Sendable {
 }
 
 public struct LilyPond: Sendable {
-    public init() {}
+    let env: LilyPondEnvironment
+
+    public init() { self.env = .default }
+    internal init(env: LilyPondEnvironment) { self.env = env }
 
     public func version(lilypondURL override: URL? = nil) throws -> String {
-        let bin = try LilyPondLocator.find(embeddedPreferred: true, override: override)
-        let (out, _) = try ProcessExecutor.run(bin.path, args: ["--version"]) // best-effort
+        let bin = try env.locator.find(embeddedPreferred: true, override: override)
+        let (out, _) = try env.runner.run(bin.path, args: ["--version"]) // best-effort
         let first = out.split(separator: "\n").first.map(String.init)
         return first ?? out
     }
@@ -65,7 +68,7 @@ public struct LilyPond: Sendable {
         try source.data(using: .utf8)!.write(to: inputURL)
 
         let outputBase = work.appendingPathComponent("out")
-        let bin = try LilyPondLocator.find(embeddedPreferred: options.embeddedBinaryPreferred, override: nil)
+        let bin = try env.locator.find(embeddedPreferred: options.embeddedBinaryPreferred, override: nil)
 
         var args: [String] = []
         switch options.format {
@@ -82,7 +85,7 @@ public struct LilyPond: Sendable {
         args.append(contentsOf: options.additionalArgs)
         args.append(inputURL.path)
 
-        let (stdout, stderr, terminationStatus) = try ProcessExecutor.runWithStatus(bin.path, args: args, timeout: options.timeoutSeconds)
+        let (stdout, stderr, terminationStatus) = try env.runner.runWithStatus(bin.path, args: args, timeout: options.timeoutSeconds)
         let log = [stdout, stderr].joined(separator: "\n")
         guard terminationStatus == 0 else {
             throw LilyPondError.processFailed(status: terminationStatus, log: log)
@@ -241,6 +244,40 @@ enum ProcessExecutor {
     }
 }
 
+// MARK: - Testable environment
+
+protocol ProcessRunning {
+    @discardableResult
+    func run(_ launchPath: String, args: [String]) throws -> (String, String)
+    func runWithStatus(_ launchPath: String, args: [String], timeout: TimeInterval?) throws -> (String, String, Int32)
+}
+
+protocol LilyPondLocating {
+    func find(embeddedPreferred: Bool, override: URL?) throws -> URL
+}
+
+struct LilyPondEnvironment: Sendable {
+    var runner: ProcessRunning
+    var locator: LilyPondLocating
+
+    static let `default` = LilyPondEnvironment(runner: DefaultRunner(), locator: DefaultLocator())
+}
+
+struct DefaultRunner: ProcessRunning {
+    func run(_ launchPath: String, args: [String]) throws -> (String, String) {
+        try ProcessExecutor.run(launchPath, args: args)
+    }
+    func runWithStatus(_ launchPath: String, args: [String], timeout: TimeInterval?) throws -> (String, String, Int32) {
+        try ProcessExecutor.runWithStatus(launchPath, args: args, timeout: timeout)
+    }
+}
+
+struct DefaultLocator: LilyPondLocating {
+    func find(embeddedPreferred: Bool, override: URL?) throws -> URL {
+        try LilyPondLocator.find(embeddedPreferred: embeddedPreferred, override: override)
+    }
+}
+
 extension FileManager {
     func createTemporaryDirectory(prefix: String) throws -> URL {
         let dir = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
@@ -252,10 +289,9 @@ extension FileManager {
 
 // Natural order sort helper for page suffixes
 private func naturalOrder(_ a: String, _ b: String) -> Bool {
-    // Try to extract trailing numbers for intuitive ordering
     func key(_ s: String) -> (String, Int) {
-        let base = s.replacingOccurrences(of: "\\.\n$", with: "", options: .regularExpression)
-        let digits = base.reversed().prefix { $0.isNumber }.reversed()
+        let name = URL(fileURLWithPath: s).deletingPathExtension().lastPathComponent
+        let digits = name.reversed().prefix { $0.isNumber }.reversed()
         let number = Int(String(digits)) ?? 0
         return (s, number)
     }

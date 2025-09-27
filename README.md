@@ -52,12 +52,56 @@ To render **SVG** or **PNG**, set the option accordingly; SVG uses a dedicated b
 
 Note: For development builds before official releases, the package uses your system `lilypond` if available. Official releases ship embedded binaries verified via provenance.
 
+### SwiftUI Preview (macOS/iOS)
+
+```swift
+import LilyPondPreview
+
+switch art.visual {
+case .pdf(let data):
+  PDFPreviewView(data)
+case .svg(let pages):
+  SVGWebView(pages.first ?? Data())
+case .png:
+  // convert or display via platform image views
+}
+```
+
+Run the included macOS demo: `swift run lp-preview-demo`
+
 ---
 
 ## Design Principles
 
 - **Hermetic runtime**: embedded binaries, fonts/configs, and environment bootstrap for consistent results.
 - **Provenance**: every release documents upstream tag, checksums, and build recipe (`PROVENANCE.md`).
+
+---
+
+## CI
+
+- GitHub Actions builds and tests on macOS and Linux with Swift 5.9 and 6.0.
+- Integration test uses system `lilypond` if present; unit tests mock the runner to avoid external deps.
+
+---
+
+## Release Engineering
+
+- Binaries are packaged under `Binaries/LilyPondBinaries.artifactbundle/`.
+- Use `tools/release/assemble_artifactbundle.sh` to place per‑arch executables and update checksums and version.
+- Publish the zipped artifact bundle and checksums in GitHub Releases; record details in `PROVENANCE.md`.
+
+---
+
+## Tests
+
+- Unit tests cover:
+  - PDF/SVG/PNG runs (mocked) with include paths, DPI, verbosity
+  - Multi‑page artifact collation and natural ordering
+  - MIDI presence detection when `\midi {}` is in the score
+  - Error propagation on non‑zero exit
+  - Locator env var fallback (`LILYPOND_PATH`)
+- Integration test renders a tiny score if system `lilypond` is installed.
 - **Safety**: strict artifact verification before publishing.
 - **Clarity**: small Swift API, thorough README and troubleshooting.
 

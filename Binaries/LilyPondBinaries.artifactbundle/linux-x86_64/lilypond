@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+echo "swift-lilypond: embedded LilyPond binary stub (linux x86_64). Replace via Release Engineering." >&2
+exit 127
+

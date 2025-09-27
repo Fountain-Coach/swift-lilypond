@@ -12,9 +12,16 @@
         {
           "path": "macos-x86_64/lilypond",
           "supportedTriples": ["x86_64-apple-macosx"]
+        },
+        {
+          "path": "linux-x86_64/lilypond",
+          "supportedTriples": ["x86_64-unknown-linux-gnu"]
+        },
+        {
+          "path": "linux-arm64/lilypond",
+          "supportedTriples": ["aarch64-unknown-linux-gnu", "aarch64-unknown-linux"]
         }
       ]
     }
   }
 }
-
