@@ -9,7 +9,7 @@ jobs:
   build-test:
     strategy:
       matrix:
-        os: [macos-14, ubuntu-22.04]
+        os: [macos-14, macos-13, ubuntu-22.04]
         swift: ["6.0", "5.9"]
     runs-on: ${{ matrix.os }}
     steps:

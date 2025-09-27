@@ -18,15 +18,29 @@ let package = Package(
             name: "LilyPondBinaries",
             path: "Binaries/LilyPondBinaries.artifactbundle"
         ),
+        // Tool used by the plugin to generate a Swift file with the embedded tool path
+        .executableTarget(
+            name: "lp-path-gen",
+            path: "Tools/lp-path-gen"
+        ),
+        // Plugin that discovers the artifact tool path and generates Swift code
+        .plugin(
+            name: "LilyPondPathPlugin",
+            capability: .buildTool(),
+            dependencies: [
+                .target(name: "lp-path-gen")
+            ]
+        ),
         .target(
             name: "LilyPondKit",
             dependencies: [
                 // Keep the dependency so consumers get embedded artifacts in releases
-                .target(name: "LilyPondBinaries", condition: .when(platforms: [.macOS]))
+                .target(name: "LilyPondBinaries", condition: .when(platforms: [.macOS, .linux]))
             ],
             resources: [
                 .process("Resources")
-            ]
+            ],
+            plugins: ["LilyPondPathPlugin"]
         ),
         .executableTarget(
             name: "lpkit",
