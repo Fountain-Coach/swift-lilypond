@@ -32,6 +32,8 @@ jobs:
   release-package:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Assemble artifact bundle v2.24.4
@@ -40,6 +42,18 @@ jobs:
           bash tools/release/assemble_artifactbundle.sh --version v2.24.4 \
             --macos-x86_64 https://gitlab.com/lilypond/lilypond/-/releases/v2.24.4/downloads/lilypond-2.24.4-darwin-x86_64.tar.gz \
             --linux-x86_64 https://gitlab.com/lilypond/lilypond/-/releases/v2.24.4/downloads/lilypond-2.24.4-linux-x86_64.tar.gz
+      - name: Patch manifest for remote binaryTarget
+        run: |
+          ZIP_SHA=$(awk '/artifact bundle zip/ {getline; print $1}' tools/release/checksums.txt)
+          # GitHub release asset URL (assumes release uploaded as LilyPondBinaries.artifactbundle.zip)
+          ASSET_URL="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/LilyPondBinaries.artifactbundle.zip"
+          bash tools/release/make_remote_manifest.sh --url "$ASSET_URL" --checksum "$ZIP_SHA"
+      - name: Prepare source-offer and license assets
+        run: |
+          mkdir -p sources LICENSES
+          curl -L https://gitlab.com/lilypond/lilypond/-/archive/v2.24.4/lilypond-v2.24.4.tar.gz -o sources/lilypond-v2.24.4.tar.gz
+          (cd sources && shasum -a 256 lilypond-v2.24.4.tar.gz > checksums.txt)
+          curl -L https://www.gnu.org/licenses/gpl-3.0.txt -o LICENSES/GPL-3.0.txt
       - name: Upload artifact bundle
         uses: actions/upload-artifact@v4
         with:
@@ -47,3 +61,34 @@ jobs:
           path: |
             Binaries/LilyPondBinaries.artifactbundle.zip
             tools/release/checksums.txt
+            Package.swift.remote
+            SOURCE-OFFER.md
+            LICENSES/GPL-3.0.txt
+            LICENSES/README.md
+            sources/lilypond-v2.24.4.tar.gz
+            sources/checksums.txt
+      - name: Create GitHub Release and upload assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            Binaries/LilyPondBinaries.artifactbundle.zip
+            tools/release/checksums.txt
+            Package.swift.remote
+            SOURCE-OFFER.md
+            LICENSES/GPL-3.0.txt
+            LICENSES/README.md
+            sources/lilypond-v2.24.4.tar.gz
+            sources/checksums.txt
+          body: |
+            swift-lilypond release ${{ github.ref_name }}
+
+            Embedded LilyPond: v2.24.4
+
+            Assets:
+            - LilyPondBinaries.artifactbundle.zip (SPM binaryTarget artifact)
+            - checksums.txt (bundle + upstream bin hashes)
+            - Package.swift.remote (remote manifest referencing the release asset + checksum)
+            - SOURCE-OFFER.md + lilypond-v2.24.4.tar.gz (GPL source offer)
+            - GPL-3.0.txt (license text) and LICENSES/README.md
