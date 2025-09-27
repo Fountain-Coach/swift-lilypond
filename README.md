@@ -54,23 +54,6 @@ Note: For development builds before official releases, the package uses your sys
 
 To force using the embedded bundle at runtime, set `LILYPOND_PATH` to the wrapper executable inside the artifact bundle for your platform (e.g., `.../LilyPondBinaries.artifactbundle/macos-x86_64/lilypond`).
 
-### SwiftUI Preview (macOS/iOS)
-
-```swift
-import LilyPondPreview
-
-switch art.visual {
-case .pdf(let data):
-  PDFPreviewView(data)
-case .svg(let pages):
-  SVGWebView(pages.first ?? Data())
-case .png:
-  // convert or display via platform image views
-}
-```
-
-Run the included macOS demo: `swift run lp-preview-demo`
-
 ---
 
 ## Design Principles
@@ -201,6 +184,14 @@ We avoid GitHub mirrors for release artifacts and always cite the GitLab tag use
 
 - **`swift-csound`** (MIDI → audio rendering) — keep repo boundaries clean; this package exports MIDI only.
 - Other Fountain‑Coach Swift repos share conventions: semver, provenance, AGENTS, CI parity.
+
+### Teatro Integration (SPM)
+
+- Add dependency in Teatro:
+
+  .package(url: "https://github.com/Fountain-Coach/swift-lilypond.git", from: "0.1.0")
+
+- Depend on `LilyPondKit` in a Teatro target and use the library directly (no servers or pid/log plumbing needed). See `Docs/Teatro-Integration.md` for a complete example and migration guidance from `Process()` usage.
 
 ---
 

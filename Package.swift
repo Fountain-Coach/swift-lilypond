@@ -8,9 +8,7 @@ let package = Package(
     ],
     products: [
         .library(name: "LilyPondKit", targets: ["LilyPondKit"]),
-        .executable(name: "lpkit", targets: ["lpkit"]),
-        .library(name: "LilyPondPreview", targets: ["LilyPondPreview"]),
-        .executable(name: "lp-preview-demo", targets: ["lp-preview-demo"]) // macOS demo
+        .executable(name: "lpkit", targets: ["lpkit"])
     ],
     targets: [
         // Stubbed binary artifact bundle; release engineering will replace contents per tag.
@@ -47,15 +45,7 @@ let package = Package(
             name: "lpkit",
             dependencies: ["LilyPondKit"]
         ),
-        .target(
-            name: "LilyPondPreview",
-            dependencies: ["LilyPondKit"],
-            path: "Sources/LilyPondPreview"
-        ),
-        .executableTarget(
-            name: "lp-preview-demo",
-            dependencies: ["LilyPondKit", "LilyPondPreview"]
-        ),
+        
         .testTarget(
             name: "LilyPondKitTests",
             dependencies: ["LilyPondKit"]
