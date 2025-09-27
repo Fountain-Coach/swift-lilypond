@@ -5,6 +5,12 @@ Goal: use swift-lilypond as a pure Swift wrapper inside Teatro via SPM — no se
 
 1) Add dependency in Teatro/Package.swift
 
+Development (before first tag):
+```
+.package(url: "https://github.com/Fountain-Coach/swift-lilypond.git", branch: "main")
+```
+
+After releases begin (example):
 ```
 .package(url: "https://github.com/Fountain-Coach/swift-lilypond.git", from: "0.1.0")
 ```
@@ -59,4 +65,3 @@ This writes `score.pdf` and, if `\\midi {}` exists in the source, `score.midi`.
 4) Minimal replacement for docs/06_LilyPondMusicRendering.md
 
 Replace the `Process()` example with the snippet above using `LilyPondKit` so Teatro does not shell out to system `lilypond` directly.
-

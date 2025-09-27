@@ -23,6 +23,12 @@ A drop‑in **Swift Package** that wraps **LilyPond** to render **PDF/SVG/PNG** 
 
 Add the dependency to your `Package.swift`:
 
+// Development (before first tag)
+```swift
+.package(url: "https://github.com/Fountain-Coach/swift-lilypond.git", branch: "main")
+```
+
+// After releases start (example)
 ```swift
 .package(url: "https://github.com/Fountain-Coach/swift-lilypond.git", from: "0.1.0")
 ```
@@ -33,7 +39,7 @@ Basic usage:
 import LilyPondKit
 
 let ly = [
-  "\\version \"2.24.0\"",
+  "\\version \"2.24.4\"",
   "\\score {",
   "  \\new Staff \\with { midiInstrument = \"glockenspiel\" }",
   "  { c'4 d' e' f' | g'1 }",
@@ -187,9 +193,11 @@ We avoid GitHub mirrors for release artifacts and always cite the GitLab tag use
 
 ### Teatro Integration (SPM)
 
-- Add dependency in Teatro:
+- Add dependency in Teatro (before first tag, use branch; after release, use from:):
 
-  .package(url: "https://github.com/Fountain-Coach/swift-lilypond.git", from: "0.1.0")
+  .package(url: "https://github.com/Fountain-Coach/swift-lilypond.git", branch: "main")
+  // or, once releases are published:
+  // .package(url: "https://github.com/Fountain-Coach/swift-lilypond.git", from: "0.1.0")
 
 - Depend on `LilyPondKit` in a Teatro target and use the library directly (no servers or pid/log plumbing needed). See `Docs/Teatro-Integration.md` for a complete example and migration guidance from `Process()` usage.
 
