@@ -28,7 +28,8 @@ let package = Package(
             name: "LilyPondPathPlugin",
             capability: .buildTool(),
             dependencies: [
-                .target(name: "lp-path-gen")
+                .target(name: "lp-path-gen"),
+                .target(name: "LilyPondBinaries")
             ]
         ),
         .target(
