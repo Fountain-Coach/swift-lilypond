@@ -52,6 +52,8 @@ To render **SVG** or **PNG**, set the option accordingly; SVG uses a dedicated b
 
 Note: For development builds before official releases, the package uses your system `lilypond` if available. Official releases ship embedded binaries verified via provenance.
 
+To force using the embedded bundle at runtime, set `LILYPOND_PATH` to the wrapper executable inside the artifact bundle for your platform (e.g., `.../LilyPondBinaries.artifactbundle/macos-x86_64/lilypond`).
+
 ### SwiftUI Preview (macOS/iOS)
 
 ```swift
@@ -102,6 +104,12 @@ Run the included macOS demo: `swift run lp-preview-demo`
   - Error propagation on non‑zero exit
   - Locator env var fallback (`LILYPOND_PATH`)
 - Integration test renders a tiny score if system `lilypond` is installed.
+
+### Golden Corpus
+
+- Generate goldens for the latest stable (v2.24.4): `tools/golden/build_golden.sh`.
+- The script downloads the official generic package if `lilypond` is not installed and writes expected artifacts to `Tests/Golden/expected/v2.24.4/`.
+- Golden tests compare checksums when the corpus is present; otherwise they skip.
 - **Safety**: strict artifact verification before publishing.
 - **Clarity**: small Swift API, thorough README and troubleshooting.
 

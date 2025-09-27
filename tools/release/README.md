@@ -12,15 +12,13 @@ This repo ships LilyPond via an SPM binary artifact bundle. To produce a release
 - Linux (x86_64, arm64): build from source in a clean container
 
 3) Assemble artifact bundle and checksums
-- Put executables into the artifact bundle using the helper script:
+- Put executables (or tarballs) into the artifact bundle using the helper script:
 
-  tools/release/assemble_artifactbundle.sh --version v2.24.1 \
-    --macos-arm64 /path/to/lilypond \
-    --macos-x86_64 /path/to/lilypond \
-    --linux-x86_64 /path/to/lilypond \
-    --linux-arm64 /path/to/lilypond
+  tools/release/assemble_artifactbundle.sh --version v2.24.4 \
+    --macos-x86_64 https://gitlab.com/lilypond/lilypond/-/releases/v2.24.4/downloads/lilypond-2.24.4-darwin-x86_64.tar.gz \
+    --linux-x86_64 https://gitlab.com/lilypond/lilypond/-/releases/v2.24.4/downloads/lilypond-2.24.4-linux-x86_64.tar.gz
 
-- The script updates info.json, sets permissions, zips the bundle, and writes SHA256 checksums to tools/release/checksums.txt
+- The script extracts tarballs (if provided), copies the full package under each variant, creates a wrapper executable, updates info.json, zips the bundle, and writes SHA256 checksums to tools/release/checksums.txt
 
 4) Publish release
 - Create a GitHub Release for the version
@@ -35,4 +33,3 @@ Notes
 -----
 - We embed the artifact bundle via `path:` in Package.swift. This keeps local dev simple. In future we can switch to `.url` if we host the zip.
 - The bundle format supports multiple variants; we currently publish macOS and Linux.
-

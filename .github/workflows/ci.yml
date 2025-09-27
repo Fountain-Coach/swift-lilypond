@@ -22,4 +22,28 @@ jobs:
         run: swift build -v
       - name: Test
         run: swift test -v
+      - name: Golden (Linux only)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get update && sudo apt-get install -y zip curl jq
+          bash tools/golden/build_golden.sh
+          swift test -v
 
+  release-package:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble artifact bundle v2.24.4
+        run: |
+          sudo apt-get update && sudo apt-get install -y zip curl jq rsync
+          bash tools/release/assemble_artifactbundle.sh --version v2.24.4 \
+            --macos-x86_64 https://gitlab.com/lilypond/lilypond/-/releases/v2.24.4/downloads/lilypond-2.24.4-darwin-x86_64.tar.gz \
+            --linux-x86_64 https://gitlab.com/lilypond/lilypond/-/releases/v2.24.4/downloads/lilypond-2.24.4-linux-x86_64.tar.gz
+      - name: Upload artifact bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: LilyPondBinaries-artifactbundle
+          path: |
+            Binaries/LilyPondBinaries.artifactbundle.zip
+            tools/release/checksums.txt

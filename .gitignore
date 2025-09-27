@@ -29,6 +29,14 @@ Package.resolved
 *.midi
 *.mid
 
+# Local artifact bundle payloads and release outputs
+Binaries/LilyPondBinaries.artifactbundle/**/pkg/
+Binaries/*.zip
+tools/release/checksums.txt
+
+# Golden corpus outputs
+Tests/Golden/expected/
+
 # Coverage
 .coverage/
 *.profdata
